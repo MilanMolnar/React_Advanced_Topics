@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
-import { Todo } from "../hooks/useTodos";
+import { Todo } from "./services/todoService";
 import axios from "axios";
 import useAddTodo from "../hooks/useAddTodo";
 
@@ -33,7 +33,7 @@ const TodoForm = () => {
         </div>
         <div className="col">
           <button disabled={addTodo.isLoading} className="btn btn-primary">
-            {addTodo.isLoading ? "Creating..." : "Add +"}
+            {addTodo.isLoading ? "Creating" : "Create +"}
           </button>
         </div>
       </form>
