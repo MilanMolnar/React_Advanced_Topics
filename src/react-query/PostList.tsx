@@ -1,34 +1,40 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-  userId: number;
-}
+import { useState } from "react";
+import usePosts from "../hooks/usePosts";
 
 const PostList = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [error, setError] = useState('');
+  const [userID, setUserID] = useState<number>();
+  const { data, error, isLoading } = usePosts(userID);
 
-  useEffect(() => {
-    axios
-      .get('https://jsonplaceholder.typicode.com/posts')
-      .then((res) => setPosts(res.data))
-      .catch((error) => setError(error));
-  }, []);
+  if (isLoading) return <p>Loading...</p>;
 
-  if (error) return <p>{error}</p>;
+  if (error) return <p>{error.message}</p>;
+
+  let users = [
+    { name: "Bence", id: "1" },
+    { name: "Miklós", id: "2" },
+    { name: "Dániel", id: "3" },
+  ];
 
   return (
-    <ul className="list-group">
-      {posts.map((post) => (
-        <li key={post.id} className="list-group-item">
-          {post.title}
-        </li>
-      ))}
-    </ul>
+    <>
+      <select
+        onChange={(event) => setUserID(parseInt(event.target.value))}
+        value={userID}
+        className="form-select mb-3"
+      >
+        <option value="0"></option>
+        {users.map((user) => (
+          <option value={user.id}>{user.name}</option>
+        ))}
+      </select>
+      <ul className="list-group">
+        {data?.map((post) => (
+          <li key={post.id} className="list-group-item">
+            {post.title}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };
 
