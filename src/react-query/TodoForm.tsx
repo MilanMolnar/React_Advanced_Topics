@@ -3,25 +3,40 @@ import { useRef } from "react";
 import { Todo } from "../hooks/useTodos";
 import axios from "axios";
 
+interface AddTodoContext {
+  prevTodos: Todo[];
+}
+
 const TodoForm = () => {
   const queryClient = useQueryClient();
   const ref = useRef<HTMLInputElement>(null);
-  const addTodo = useMutation<Todo, Error, Todo>({
+  const addTodo = useMutation<Todo, Error, Todo, AddTodoContext>({
     mutationFn: (todo: Todo) =>
       axios
         .post<Todo>("https://jsonplaceholder.typicode.com/posts", todo)
         .then((res) => res.data),
-    onSuccess: (savedTodo, newTodo) => {
-      // Approach #1 Invalidating the cache and re-fetch data from backend
-      //queryClient.invalidateQueries({
-      //  queryKey: ["todos"],
-      //});
 
-      // Approach #2 updating cache directly
+    onMutate: (newTodo: Todo) => {
+      const prevTodos = queryClient.getQueryData<Todo[]>(["todos"]) || [];
+
       queryClient.setQueryData<Todo[]>(["todos"], (todos) => [
-        savedTodo,
+        newTodo,
         ...(todos || []),
       ]);
+      if (ref.current) ref.current.value = "";
+
+      return { prevTodos };
+    },
+
+    onSuccess: (savedTodo, newTodo) => {
+      queryClient.setQueryData<Todo[]>(["todos"], (todos) =>
+        todos?.map((todo) => (todo === newTodo ? savedTodo : todo))
+      );
+    },
+
+    onError: (error, newTodo, context) => {
+      if (!context) return;
+      queryClient.setQueryData<Todo[]>(["todos"], context.prevTodos);
     },
   });
 
@@ -48,7 +63,9 @@ const TodoForm = () => {
           <input ref={ref} type="text" className="form-control" />
         </div>
         <div className="col">
-          <button className="btn btn-primary">Add</button>
+          <button disabled={addTodo.isLoading} className="btn btn-primary">
+            {addTodo.isLoading ? "Creating..." : "Add +"}
+          </button>
         </div>
       </form>
     </>
