@@ -3,9 +3,10 @@ import TodoList from "./react-query/TodoList";
 import PostList from "./react-query/PostList";
 import TodoForm from "./react-query/TodoForm";
 import Counter from "./state-management/Counter";
+import TaskList from "./state-management/TaskList";
 
 function App() {
-  return <Counter></Counter>;
+  return <TaskList />;
 }
 
 export default App;
