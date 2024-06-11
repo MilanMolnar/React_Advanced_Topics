@@ -2,10 +2,12 @@ import { useContext, useReducer, useState } from "react";
 import tasksReducer from "./reducers/tasksReducer";
 import TasksContext from "./contexts/tasksContext";
 import AuthContext from "./contexts/authContext";
+import useTask from "../state-management/hooks/useTasks";
+import useAuth from "../state-management/hooks/useAuth";
 
 const TaskList = () => {
-  const context = useContext(TasksContext);
-  const { user } = useContext(AuthContext);
+  const context = useTask();
+  const { user } = useAuth();
   return (
     <>
       <button
