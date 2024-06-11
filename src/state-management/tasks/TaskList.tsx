@@ -1,11 +1,9 @@
-import { useContext, useReducer, useState } from "react";
-import tasksReducer from "./reducers/tasksReducer";
-import TasksContext from "./contexts/tasksContext";
-import AuthContext from "./contexts/authContext";
-import useTask from "../state-management/hooks/useTasks";
-import useAuth from "../state-management/hooks/useAuth";
+import useAuth from "../hooks/useAuth";
+import { useContext } from "react";
+import TasksContext from "./tasksContext";
 
 const TaskList = () => {
+  const useTask = () => useContext(TasksContext);
   const context = useTask();
   const { user } = useAuth();
   return (
@@ -14,7 +12,12 @@ const TaskList = () => {
         onClick={() =>
           context.dispatch({
             type: "ADD",
-            task: { id: Date.now(), title: "Task " + Date.now() + user },
+            task: {
+              id: Date.now(),
+              title: user
+                ? "Task " + Date.now() + user
+                : "Task " + Date.now() + "anonymous",
+            },
           })
         }
         className="btn btn-primary my-3"
