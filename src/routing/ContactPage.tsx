@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 const ContactPage = () => {
   const navigate = useNavigate();
-
+  throw new Error("Kutya");
   return (
     <form
       onSubmit={(event) => {
